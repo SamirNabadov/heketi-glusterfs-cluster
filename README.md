@@ -2,7 +2,7 @@ Glusterfs & Heketi CLuster
 ================================
 
 
-Install & Configure Glusterfs & Heketi Cluster for dynamic provisioning Kubernetes
+Install and Configure Glusterfs & Heketi Cluster for dynamic provisioning Kubernetes
 
 
 
