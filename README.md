@@ -10,7 +10,7 @@ Configured software and tools
 * Heketi v10.4.0-release-10 (using go: go1.15.14)
 * Glusterfs 9.5
 
-Heketi & Glusterfs structure
+Heketi & Glusterfs cluster structure
 ------------
 ![Screenshot](gluster-heketi.png)
 
