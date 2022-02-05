@@ -1,0 +1,9 @@
+--- # Glusterfs & Heketi role
+- name: GlusterFS playbook
+  hosts: all
+  any_errors_fatal: true
+  become: true
+  become_user: root
+  roles:
+  - glusterfs
+  - heketi

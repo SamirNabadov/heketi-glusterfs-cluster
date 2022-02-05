@@ -1,0 +1,11 @@
+[glusterfs]
+glusterfs1 ansible_host=192.168.1.11
+glusterfs2 ansible_host=192.168.1.12
+glusterfs3 ansible_host=192.168.1.13
+
+[heketi]
+heketi1 ansible_host=192.168.1.10
+
+[nodes:children]
+glusterfs
+heketi

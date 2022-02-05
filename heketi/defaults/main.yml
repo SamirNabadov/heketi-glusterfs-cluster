@@ -1,0 +1,27 @@
+---
+# defaults file for heketi
+
+
+heketi_user: heketi
+heketi_group: heketi
+
+heketi_url: https://github.com/heketi/heketi/releases/download/v10.4.0/heketi-v10.4.0-release-10.linux.amd64.tar.gz
+
+heketi_folder:
+  - /var/lib/heketi
+  - /etc/heketi
+  - /var/log/heketi
+
+heketi_config: /etc/heketi/heketi.json
+
+heketi_service_path: /etc/systemd/system/heketi.service
+    
+heketi_service: heketi
+
+heketi_cli: /usr/local/bin/heketi-cli
+heketi_binary: /usr/local/bin/heketi
+
+heketi_admin_key: root
+heketi_user_key: root
+
+heketi_key_path: /etc/heketi/heketi_key

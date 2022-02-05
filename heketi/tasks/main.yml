@@ -1,0 +1,176 @@
+---
+# tasks file for heketi
+
+- name: Update the /etc/hosts file with node names
+  lineinfile:
+    dest: /etc/hosts
+    regexp: '.*{{ item }}$'
+    line: "{{ hostvars[item].ansible_host }} {{item}}"
+    state: present
+  when: 
+    - hostvars[item].ansible_host is defined
+    - inventory_hostname in groups["heketi"]
+  loop: "{{ groups.all }}"
+
+- name: Create group
+  group: 
+    name: "{{ heketi_group }}"
+  when: 
+    - inventory_hostname in groups["heketi"]
+
+- name: Create user
+  user: 
+    name: "{{ heketi_user }}"
+    groups: "{{ heketi_group }}"
+    password: "" 
+    shell: /sbin/nologin 
+    append: yes 
+    comment: "Heketi nologin user" 
+    state: present
+  when: 
+    - inventory_hostname in groups["heketi"]
+
+- name: Download package
+  get_url:
+    url: "{{ heketi_url }}"
+    dest: /tmp/
+  when: 
+    - inventory_hostname in groups["heketi"]
+
+- name: Unarchive
+  unarchive:
+    src: /tmp/heketi-v10.4.0-release-10.linux.amd64.tar.gz
+    dest: /tmp/
+    remote_src: yes
+  when: 
+    - inventory_hostname in groups["heketi"]
+
+- name: Copy binary files
+  copy:
+    src: "/tmp/heketi/{{  item }}"
+    dest: /usr/local/bin/
+    remote_src: yes
+    owner: "{{ heketi_user }}"
+    group: "{{ heketi_group }}"
+    mode: 755
+  loop:
+    - heketi
+    - heketi-cli
+  when: 
+    - inventory_hostname in groups["heketi"]
+
+- name: Creates directory
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ heketi_user }}"
+    group: "{{ heketi_group }}"
+    mode: 0775
+    recurse: yes
+  loop: "{{ heketi_folder }}"
+  when: 
+    - inventory_hostname in groups["heketi"]
+
+- name: Generate RSA host key
+  shell: > 
+    ssh-keygen -q -b 2048 -t rsa -N "" -C "creating SSH" -f /etc/heketi/heketi_key
+    creates="/etc/heketi/heketi_key"
+  when: 
+    - inventory_hostname in groups["heketi"]
+
+- name: Set permission to /etc/heketi/heketi_key
+  file:
+    path: /etc/heketi/heketi_key
+    owner: "{{ heketi_user }}"
+    group: "{{ heketi_group }}"
+  when: 
+    - inventory_hostname in groups["heketi"]
+  
+- name: Fetch the keyfile from one server to another
+  fetch: 
+    src: "/etc/heketi/heketi_key.pub"
+    dest: "/tmp/heketi_key.pub"
+    flat: yes
+  when: 
+    - inventory_hostname in groups["heketi"]
+
+- name: Creates directory
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0775
+    recurse: yes
+  loop:
+    - ~/.ssh
+  when: 
+    - inventory_hostname in groups["glusterfs"]
+
+- name: Copy the key add to authorized_keys using Ansible module
+  copy:
+    src: "/tmp/heketi_key.pub"
+    dest: "~/.ssh/authorized_keys"
+  when: 
+    - inventory_hostname in groups["glusterfs"]
+
+- name: Copy heketi configuration file
+  template:
+    src: heketi.j2
+    owner: "{{ heketi_user }}"
+    group: "{{ heketi_group }}"
+    mode: 0644
+    dest: "{{ heketi_config }}"
+  when: 
+    - inventory_hostname in groups["heketi"]
+    
+- name: Copy service file
+  template:
+    src: service.j2
+    dest: "{{ heketi_service_path }}"
+  when: 
+    - inventory_hostname in groups["heketi"]
+
+- name: daemon reload
+  systemd:
+    daemon_reload: yes
+  when: 
+    - inventory_hostname in groups["heketi"]
+
+- name: Start and enable service
+  service:
+    name: "{{ heketi_service }}"
+    state: restarted
+    enabled: yes
+  when: 
+    - inventory_hostname in groups["heketi"]
+
+- name: Copy topology.json file to heketi server
+  template:
+    src: topology.j2
+    owner: heketi
+    group: heketi
+    mode: 0644
+    dest: "/etc/heketi/heketi_topology.json"
+  when: 
+    - inventory_hostname in groups["heketi"]
+
+- name: Create cluster and join nodes
+  shell: > 
+    /usr/local/bin/heketi-cli topology load --json="/etc/heketi/heketi_topology.json"
+  environment:
+    HEKETI_CLI_KEY: root
+    HEKETI_CLI_USER: admin
+    HEKETI_CLI_SERVER: http://heketi1:8080
+  ignore_errors: yes
+  changed_when: false
+  register: result
+  when: 
+    - inventory_hostname in groups["heketi"]
+
+- name: Show cluster status
+  debug:
+    msg: "{{ result.stdout }}"
+  ignore_errors: yes
+  changed_when: false
+  when: 
+    - inventory_hostname in groups["heketi"]
+  

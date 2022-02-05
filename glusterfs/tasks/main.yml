@@ -1,0 +1,65 @@
+---
+# tasks file for glusterfs
+
+- name: Update the /etc/hosts file with node names
+  lineinfile:
+    dest: /etc/hosts
+    regexp: '.*{{ item }}$'
+    line: "{{ hostvars[item].ansible_host }} {{item}}"
+    state: present
+  when: 
+    - hostvars[item].ansible_host is defined
+  loop: "{{ groups.all }}"
+  when: 
+    - inventory_hostname in groups["glusterfs"]
+
+- name: Install packages 
+  yum:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  loop: "{{ glusterfs_packages }}"
+  when: 
+    - inventory_hostname in groups["glusterfs"]
+
+- name: Enable and Start service
+  service:
+    name: "{{ glusterfs_service }}"
+    state: started
+    enabled: yes
+  when: 
+    - inventory_hostname in groups["glusterfs"]
+
+- name: Add first node to cluster
+  command: "{{ glusterfs_binary }} peer probe {{ groups['glusterfs'][1] }}"
+  ignore_errors: yes
+  changed_when: false
+  run_once: yes
+  when: 
+    - inventory_hostname in groups["glusterfs"][0]
+
+- name: Add second node to cluster
+  command: "{{ glusterfs_binary }} peer probe {{ groups['glusterfs'][2] }}"
+  ignore_errors: yes
+  changed_when: false
+  run_once: yes
+  when: 
+    - inventory_hostname in groups["glusterfs"][0]
+
+- name: Add first node to cluster
+  command: "{{ glusterfs_binary }} peer status "
+  register: status
+  ignore_errors: yes
+  changed_when: false
+  run_once: yes
+  when: 
+    - inventory_hostname in groups["glusterfs"][0]
+
+- name: Show status cluster
+  debug:
+    msg: "{{ status.stdout }}"
+  ignore_errors: yes
+  changed_when: false
+  run_once: yes
+  when: 
+    - inventory_hostname in groups["glusterfs"][0]
