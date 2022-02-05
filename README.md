@@ -29,6 +29,7 @@ Currently tested on these Operating Systems
 Requirements
 ------------
 * Ansible 2.11.7
+* Kubernetes Cluster Environment
 
 Dependencies
 ------------
@@ -36,6 +37,7 @@ Dependencies
 * Requires elevated root privileges
 * Add hosts address and names for VMs : inventory
 * Glusterfs nodes must have a 2nd sdb disk
+* The glusterfs-client package must be installed on Kubernetes worker nodes
 
 Running the Deployment
 ----------------------
