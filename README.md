@@ -1,22 +1,20 @@
-Cassandra (NoSQL distributed database)
+Glusterfs & Heketi CLuster
 ================================
 
 
-Install & Configure Cassandra Cluster in VM
+Install & Configure Glusterfs & Heketi Cluster with Ansible in VM
 
 
 Configured software and tools
 ------------
-* Cassandra 3.11.11
-* cqlsh 5.0.1cqlsh
+* Heketi v10.4.0-release-10 (using go: go1.15.14)
+* Glusterfs 9.5
 
-Heketi v10.4.0-release-10 (using go: go1.15.14)
 Basic settings
 ------------
-* Installing and Configuring Cassandra cluster
-* Configured cqlsh tool for connect and execute query in database
-* Changed cluster name (By default cluster name is "Test Cluster")
-* Created new superuser for database
+* Installing and Configuring Glusterfs
+* Installing and Configuring Heketi
+* Creating a cluster and adding glusterfs nodes
 
 
 Currently tested on these Operating Systems
@@ -27,14 +25,12 @@ Requirements
 ------------
 * Ansible 2.11.7
 
-
 Dependencies
 ------------
 * Copy Ansible control machine user's public SSH key (usually called id_rsa.pub) into the remote machine working directory
 * Requires elevated root privileges
 * Add hosts address and names for VMs : inventory
-* Prepare variable file based on your requirements: cassandra/defaults/main.yml
-
+* Glusterfs nodes must have a 2nd sdb disk
 
 Running the Deployment
 ----------------------
