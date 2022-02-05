@@ -20,7 +20,7 @@ function deploy_cluster() {
 function main() {
     deploy_cluster
     echo "---------------------------------"
-    echo "Time spent deploying Cassandra Cluster: $(($SECONDS / 3600))hrs $((($SECONDS / 60) % 60))min $(($SECONDS % 60))sec"
+    echo "Time spent deploying Cluster: $(($SECONDS / 3600))hrs $((($SECONDS / 60) % 60))min $(($SECONDS % 60))sec"
 }
 
 main
