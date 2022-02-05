@@ -1,5 +1,5 @@
 --- # Glusterfs & Heketi role
-- name: GlusterFS playbook
+- name: Cluster playbook
   hosts: all
   any_errors_fatal: true
   become: true
