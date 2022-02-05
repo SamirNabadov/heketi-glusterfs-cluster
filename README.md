@@ -2,7 +2,8 @@ Glusterfs & Heketi CLuster
 ================================
 
 
-Install & Configure Glusterfs & Heketi Cluster with Ansible in VM
+Install & Configure Glusterfs & Heketi Cluster for dynamic provisioning Kubernetes
+
 
 
 Configured software and tools
