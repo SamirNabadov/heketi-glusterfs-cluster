@@ -14,7 +14,7 @@ Basic settings
 ------------
 * Installing and Configuring Glusterfs
 * Installing and Configuring Heketi
-* Creating a cluster and adding glusterfs nodes
+* Creating cluster and adding nodes
 
 
 Currently tested on these Operating Systems
