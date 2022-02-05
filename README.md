@@ -7,7 +7,7 @@ Install & Configure Glusterfs & Heketi Cluster with Ansible in VM
 
 Configured software and tools
 ------------
-* Heketi v10.4.0-release-10 (using go: go1.15.14)
+* Heketi v10.4.0-release-10
 * Glusterfs 9.5
 
 Heketi & Glusterfs cluster structure
